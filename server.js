@@ -127,7 +127,7 @@ app.get('/api/servicos', (req, res) => {
 // Rota para agendar serviço
 app.post('/api/agendar', verificarAutenticacao, (req, res) => {
   const { servicoId, data, horario } = req.body;
-  const query = 'INSERT INTO agendamentos (usuario_id, servico_id, data, horario) VALUES (?, ?, ?, ?)';
+  const query = 'INSERT INTO agendamentos (usuario_id, servico_id, data, horario, concluida) VALUES (?, ?, ?, ?, 0)';
   
   db.query(query, [req.session.userId, servicoId, data, horario], (err, result) => {
     if (err) {
@@ -189,7 +189,7 @@ app.post('/adicionar-portfolio', verificarAutenticacao, (req, res) => {
 // Rota para obter consultas do usuário
 app.get('/api/minhas-consultas', verificarAutenticacao, (req, res) => {
   const query = `
-    SELECT a.id, s.nome as servico, s.preco, a.data, a.horario
+    SELECT a.id, s.nome as servico, s.preco, a.data, a.horario, a.concluida
     FROM agendamentos a
     JOIN servicos s ON a.servico_id = s.id
     WHERE a.usuario_id = ?

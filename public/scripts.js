@@ -76,7 +76,7 @@ if (cadastroForm) {
 // Carregar dados do usuário
 async function carregarDadosUsuario() {
     try {
-        const userData = await fazerRequisicao('/user-data');
+        const userData  = await fazerRequisicao('/user-data');
         document.getElementById('userName').textContent = userData.nome;
     } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
@@ -84,7 +84,7 @@ async function carregarDadosUsuario() {
 }
 
 // Carregar serviços
-async function  carregarServicos() {
+async function carregarServicos() {
     try {
         const servicos = await fazerRequisicao('/api/servicos');
         const listaServicos = document.getElementById('listaServicos');
@@ -246,6 +246,7 @@ async function carregarDadosConta() {
                         <p><strong>Serviço:</strong> ${consulta.servico}</p>
                         <p><strong>Data:</strong> ${new Date(consulta.data).toLocaleDateString()}</p>
                         <p><strong>Horário:</strong> ${consulta.horario}</p>
+                        <p><strong>Status:</strong> ${consulta.concluida ? 'Concluída' : 'Agendada'}</p>
                     `;
                     minhasConsultas.appendChild(consultaElement);
                 });
@@ -335,7 +336,7 @@ async function carregarDadosProprietaria() {
                 consultaElement.innerHTML = `
                     <p><strong>Cliente:</strong> ${consulta.cliente}</p>
                     <p><strong>Serviço:</strong> ${consulta.servico}</p>
-                    <p><strong>Preço:</strong> R$ ${consulta.preco.toFixed(2)}</p>
+                    <p><strong>Preço:</strong> R$ ${parseFloat(consulta.preco).toFixed(2)}</p>
                     <p><strong>Data:</strong> ${new Date(consulta.data).toLocaleDateString()}</p>
                     <p><strong>Horário:</strong> ${consulta.horario}</p>
                     <button onclick="concluirConsulta(${consulta.id})">Concluir</button>
@@ -353,7 +354,7 @@ async function carregarDadosProprietaria() {
                 consultaElement.innerHTML = `
                     <p><strong>Cliente:</strong> ${consulta.cliente}</p>
                     <p><strong>Serviço:</strong> ${consulta.servico}</p>
-                    <p><strong>Preço:</strong> R$ ${consulta.preco.toFixed(2)}</p>
+                    <p><strong>Preço:</strong> R$ ${parseFloat(consulta.preco).toFixed(2)}</p>
                     <p><strong>Data:</strong> ${new Date(consulta.data).toLocaleDateString()}</p>
                     <p><strong>Horário:</strong> ${consulta.horario}</p>
                 `;
@@ -368,17 +369,19 @@ async function carregarDadosProprietaria() {
             try {
                 await fazerRequisicao('/concluir-consulta', 'POST', { appointmentId: consultaId });
                 const consulta = todasConsultas.find(c => c.id === consultaId);
-                consulta.concluida = true;
+                if (consulta) {
+                    consulta.concluida = true;
                 
-                // Atualizar gráfico financeiro
-                const mesConsulta = new Date(consulta.data).toLocaleString('default', { month: 'long', year: 'numeric' });
-                const mesIndex = graficoFinanceiro.data.labels.indexOf(mesConsulta);
-                if (mesIndex !== -1) {
-                    graficoFinanceiro.data.datasets[0].data[mesIndex] += consulta.preco;
-                    graficoFinanceiro.update();
-                }
+                    // Atualizar gráfico financeiro
+                    const mesConsulta = new Date(consulta.data).toLocaleString('default', { month: 'long', year: 'numeric' });
+                    const mesIndex = graficoFinanceiro.data.labels.indexOf(mesConsulta);
+                    if (mesIndex !== -1) {
+                        graficoFinanceiro.data.datasets[0].data[mesIndex] += parseFloat(consulta.preco);
+                        graficoFinanceiro.update();
+                    }
 
-                atualizarConsultas();
+                    atualizarConsultas();
+                }
             } catch (error) {
                 console.error('Erro ao concluir consulta:', error);
                 alert('Ocorreu um erro ao concluir a consulta.');
