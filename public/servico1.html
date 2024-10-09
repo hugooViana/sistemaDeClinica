@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Serviço</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Detalhes do Serviço</h1>
+        <div id="servicoDetalhes">
+            <h2 id="nomeServico"></h2>
+            <p id="descricaoServico"></p>
+            <p id="precoServico"></p>
+        </div>
+        <form id="formAgendamento">
+            <div>
+                <label for="dataAgendamento">Data:</label>
+                <input type="date" id="dataAgendamento" required>
+            </div>
+            <div>
+                <label for="horarioAgendamento">Horário:</label>
+                <select id="horarioAgendamento" required>
+                    <option value="">Selecione um horário</option>
+                </select>
+            </div>
+            <button type="submit">Agendar</button>
+        </form>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
